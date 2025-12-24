@@ -120,7 +120,18 @@ export default defineEndpoint((router, { services, getSchema }) => {
           let sourceSaved = 0;
 
           try {
-            const parser = new Parser();
+            const parser = new Parser({
+              timeout: 10000,
+              headers: {
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36...",
+                Accept:
+                  "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Cache-Control": "no-cache",
+                Pragma: "no-cache",
+              },
+            });
             const feed = await parser.parseURL(source.url);
             const items = (feed?.items || []).slice(0, source.fetch_limit || 3);
 
