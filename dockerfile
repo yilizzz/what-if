@@ -9,7 +9,7 @@ ENV NPM_CONFIG_WORKSPACES=false
 COPY ./extensions /directus/extensions
 COPY ./snapshot.json /directus/snapshot.json
 
-# 3. 安装依赖（根据你之前的成功版本）
+# 3. 安装依赖
 RUN npm install -g openai rss-parser
 
 # 4. 权限修复
@@ -19,4 +19,7 @@ USER node
 
 # 5. 修改启动命令：先应用快照，再启动服务
 # --yes 参数会自动确认所有的表结构更改
-CMD npx directus schema apply ./snapshot.json --yes && npx directus start
+# CMD npx directus schema apply ./snapshot.json --yes && npx directus start
+
+# 6. 启动命令
+CMD ["npx", "directus", "start"]
