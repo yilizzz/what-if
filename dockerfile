@@ -2,18 +2,21 @@ FROM directus/directus:11.1
 
 USER root
 
-# 1. 禁用所有 npm 钩子和工作区逻辑
+# 1. 禁用工作区逻辑
 ENV NPM_CONFIG_WORKSPACES=false
-ENV NPM_CONFIG_INCLUDE_WORKSPACE_ROOT=false
 
-# 2. 直接拷贝 extensions
+# 2. 拷贝扩展和快照文件
 COPY ./extensions /directus/extensions
+COPY ./snapshot.json /directus/snapshot.json
 
-# 3. 如果你确实需要 openai 和 rss-parser，在启动前强行全局安装
-# 这样可以避开 package.json 的递归扫描报错
+# 3. 安装依赖（根据你之前的成功版本）
 RUN npm install -g openai rss-parser
 
-# 4. 修复权限
-RUN chown -R node:node /directus/extensions
+# 4. 权限修复
+RUN chown -R node:node /directus
 
 USER node
+
+# 5. 修改启动命令：先应用快照，再启动服务
+# --yes 参数会自动确认所有的表结构更改
+CMD npx directus schema apply ./snapshot.json --yes && npx directus start
