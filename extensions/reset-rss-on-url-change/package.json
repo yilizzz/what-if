@@ -1,0 +1,30 @@
+{
+  "name": "reset-rss-on-url-change",
+  "description": "Reset last_fetch_error to null, consecutive_failures to 0, status to active when rss_sources.url is updated.",
+  "icon": "extension",
+  "version": "1.0.0",
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-extension-hook"
+  ],
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "directus:extension": {
+    "type": "hook",
+    "path": "dist/index.js",
+    "source": "src/index.js",
+    "host": "^10.10.0"
+  },
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build -w --no-minify",
+    "link": "directus-extension link",
+    "validate": "directus-extension validate"
+  },
+  "devDependencies": {
+    "@directus/extensions-sdk": "17.0.4"
+  }
+}

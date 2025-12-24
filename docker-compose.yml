@@ -1,0 +1,51 @@
+# docker-compose.yml
+version: "3.7"
+
+services:
+  # 1. PostgreSQL 数据库服务
+  database:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: directus # 数据库用户名
+      POSTGRES_PASSWORD: lantudagang2025 # 数据库密码
+      POSTGRES_DB: directus # 数据库名称
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # 数据持久化
+
+  # 2. Directus 应用服务
+  directus:
+    image: directus/directus:latest
+    restart: always
+    ports:
+      - "8055:8055" # 映射端口：本地 8055 端口 -> 容器 8055 端口
+    volumes:
+      - ./extensions:/directus/extensions
+    environment:
+      # A. 应用配置
+      HOST: "0.0.0.0" #接受来自局域网（手机）的连接，而不仅仅是容器内部
+      KEY: lantudagang2025 # 💡 强烈建议替换！用于安全加密
+      SECRET: 2025lantudagang # 💡 强烈建议替换！用于 JWT 签名
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: lantudagang2025 # 初始管理员密码
+      LLM_API_KEY: "sk-8c0883760c7e4748bb6ea764813dd82b"
+      # B. 数据库连接配置 (连接到上面的 database 服务)
+      DB_CLIENT: pg # 使用 PostgreSQL
+      DB_HOST: database # 使用服务名称作为主机名
+      DB_PORT: 5432
+      DB_DATABASE: directus
+      DB_USER: directus
+      DB_PASSWORD: lantudagang2025
+
+      # C. 环境变量（用于开发）
+      # 允许从任何来源访问 API (CORS)
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:5173"
+
+      EXTENSIONS_AUTO_RELOAD: true # 自动重载扩展（开发时有用）
+
+    depends_on:
+      - database # 确保数据库先启动
+
+volumes:
+  postgres_data:

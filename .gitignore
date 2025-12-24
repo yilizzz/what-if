@@ -1,0 +1,24 @@
+# 依赖包
+node_modules/
+dist/
+
+# 敏感配置文件 
+.env
+*.env
+
+# Directus 运行时产生的数据 (如果本地测试用的是 SQLite)
+database/
+uploads/
+extensions/**/dist/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+npm-debug.log*
+
+# 临时文件
+.temp/
+.cache/
