@@ -1,23 +1,21 @@
-# 使用官方轻量镜像
 FROM directus/directus:11.1
 
-# 切换到 root 权限进行文件拷贝和权限设置
 USER root
 
-# 1. 拷贝 package.json 和 package-lock.json (如果有)
-# 这是为了安装你在 extension 中用到的第三方库
+# 1. 彻底清空可能导致错误的 npm 缓存和配置
+ENV NPM_CONFIG_USERCONFIG=/tmp/.npmrc
+
+# 2. 先创建 extensions 目录
+RUN mkdir -p /directus/extensions
+
+# 3. 只拷贝 package.json 并原地安装
 COPY package.json ./
+# 使用 --no-bin-links 和 --no-package-lock 强制纯净安装
+RUN npm install --omit=dev --no-package-lock --no-bin-links
 
-# 2. 安装扩展所需的依赖
-# 安装前删除 lock 文件并清理缓存
-RUN rm -f package-lock.json && npm install --omit=dev
-
-# 3. 拷贝所有的 extensions 文件夹
-# 注意：Directus 启动时会自动扫描这个目录下的子文件夹
+# 4. 最后拷贝扩展代码
 COPY ./extensions /directus/extensions
 
-# 4. 修改权限，确保 node 用户可以读取
-RUN chown -R node:node /directus/extensions /directus/node_modules
+RUN chown -R node:node /directus/extensions
 
-# 切换回安全用户
 USER node
