@@ -10,7 +10,7 @@ COPY package.json ./
 
 # 2. 安装扩展所需的依赖
 # --production 减少镜像体积，适合 Railway 的 0.5GB 限制
-RUN npm install --production
+RUN npm install --omit=dev --no-workspaces
 
 # 3. 拷贝所有的 extensions 文件夹
 # 注意：Directus 启动时会自动扫描这个目录下的子文件夹
