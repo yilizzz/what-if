@@ -1,6 +1,8 @@
 # 依赖包
 node_modules/
 dist/
+# 但排除（即允许上传）扩展目录下的 dist/index.js
+!extensions/**/dist/index.js
 
 # 敏感配置文件 
 .env
