@@ -172,6 +172,9 @@ export default defineEndpoint((router, { services, getSchema }) => {
                       : new Date().toISOString(),
                     category: llmResult.category,
                     summary_zh: llmResult.summary_zh,
+                    summary: llmResult.summary,
+                    inspiration: llmResult.inspiration,
+                    inspiration_zh: llmResult.inspiration_zh,
                   });
                   sourceSaved++;
                   stats.total_saved++;
