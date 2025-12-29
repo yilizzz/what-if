@@ -1,0 +1,15 @@
+name: Daily RSS Sync
+
+on:
+  schedule:
+    # 每天 UTC 06:00 触发
+    - cron: "0 6 * * *"
+  workflow_dispatch: # 允许你在 GitHub 页面上点击按钮手动触发测试
+
+jobs:
+  trigger-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Request to Directus
+        run: |
+          curl -X POST "https://what-if.up.railway.app/rss-worker/process?secret=${{ secrets.DIRECTUS_STATIC_TOKEN }}"
