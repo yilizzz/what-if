@@ -41,6 +41,9 @@ export default defineEndpoint((router, { services, getSchema }) => {
   let isProcessing = false;
 
   router.post("/process", async (req, res) => {
+    if (req.query.secret !== process.env.DIRECTUS_STATIC_TOKEN) {
+      return res.status(403).send("Forbidden");
+    }
     if (isProcessing)
       return res.status(429).json({ message: "Task is already running" });
 
