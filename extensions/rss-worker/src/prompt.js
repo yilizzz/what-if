@@ -67,11 +67,11 @@ Write this as a compelling 150-250 word pitch paragraph that a producer or edito
 {
   is_relevant: true,
   title_zh: "中文标题",
-  summary: "1-2 sentence technical summary",
+  summary: "1-2 sentence technical summary in english",
   summary_zh: "技术要点中文总结",
   category: "biotech/physics/computer/space/climate/other",
-  inspiration: "A comprehensive story pitch (150-250 words) that integrates all elements: Start with 'What if [tech extrapolation]?' then weave together the setting (how tech transformed society), protagonist (their relationship to tech and motivation), core conflict (how the selected conflict manifests), narrative approach (how the mode shapes storytelling), and unique angle (what makes it fresh). Write as a flowing paragraph that feels like a complete, compelling pitch deck—not bullet points or separate sections. Include specific details about character actions, moral dilemmas, and the story's deeper questions.",
-  inspiration_zh: "完整的故事创意（150-250字），整合所有元素：以"如果【科技推演】会怎样？"开头，然后融合设定（科技如何改变社会）、主角（与技术的关系和动机）、核心冲突（选中的冲突如何体现）、叙事手法（模式如何塑造讲述方式）和独特角度（为何新鲜）。写成流畅的段落，感觉像完整、有说服力的故事提案——不是要点或分段。包含角色行动、道德困境和故事深层问题的具体细节。"
+  inspiration: "A comprehensive story pitch in english (150-250 words) that integrates all elements: Start with 'What if [tech extrapolation]?' then weave together the setting (how tech transformed society), protagonist (their relationship to tech and motivation), core conflict (how the selected conflict manifests), narrative approach (how the mode shapes storytelling), and unique angle (what makes it fresh). Write as a flowing paragraph that feels like a complete, compelling pitch deck—not bullet points or separate sections. Include specific details about character actions, moral dilemmas, and the story's deeper questions.",
+  inspiration_zh: "完整的中文故事创意（150-250字），整合所有元素：以"如果【科技推演】会怎样？"开头，然后融合设定（科技如何改变社会）、主角（与技术的关系和动机）、核心冲突（选中的冲突如何体现）、叙事手法（模式如何塑造讲述方式）和独特角度（为何新鲜）。写成流畅的段落，感觉像完整、有说服力的故事提案——不是要点或分段。包含角色行动、道德困境和故事深层问题的具体细节。"
 }
 
 [Creative Principles]
