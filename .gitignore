@@ -1,7 +1,13 @@
 # 依赖包
 node_modules/
+
+# 忽略所有 dist 目录
 dist/
-# 但排除（即允许上传）扩展目录下的 dist/index.js
+
+# 但是不要忽略 extensions 下的 dist 目录
+!extensions/**/dist/
+
+# 然后特别允许 dist 下的 index.js
 !extensions/**/dist/index.js
 
 # 敏感配置文件 
@@ -11,7 +17,6 @@ dist/
 # Directus 运行时产生的数据 (如果本地测试用的是 SQLite)
 database/
 uploads/
-extensions/**/dist/
 
 # 操作系统文件
 .DS_Store
