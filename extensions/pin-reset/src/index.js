@@ -97,11 +97,16 @@ export default defineEndpoint(
                 to: email,
                 subject: "What if---PIN Reset Request",
                 html: `
-					<h2>What if---PIN Reset Request</h2>
-					<p>You requested to reset your PIN code. Click the link below to proceed:</p>
-					<p><a href="${resetLink}">Reset PIN</a></p>
-					<p>This link will expire in 10 minutes.</p>
-					<p>If you did not request this, please ignore this email.</p>
+					<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+						<h2 style="color: #2c3e50;">What if---PIN Reset Request</h2>
+						<p style="color: #34495e; line-height: 1.6;">You requested to reset your PIN code. Click the link below to proceed:</p>
+						<p style="color: #e74c3c; font-weight: bold; line-height: 1.6;">⚠️ If you have already installed PWA, please open this link in your app afterwards. Do not reset it in the browser embedded in the email, otherwise the data will not be synchronized.</p>
+						<p style="margin: 30px 0;">
+							<a href="${resetLink}" style="background-color: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset PIN</a>
+						</p>
+						<p style="color: #7f8c8d; font-size: 14px;">This link will expire in 10 minutes.</p>
+						<p style="color: #95a5a6; font-size: 12px;">If you did not request this, please ignore this email.</p>
+					</div>
 				`,
               }),
               // 邮件发送超时 10秒
