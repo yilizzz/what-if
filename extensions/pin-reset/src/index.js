@@ -13,7 +13,7 @@ import { Resend } from "resend";
 export default defineEndpoint(
   (router, { services, getSchema, env, database }) => {
     const { ItemsService, UsersService } = services;
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const resend = new Resend(env.RESEND_API_KEY);
 
     /**
      * Generate secure random token
@@ -83,7 +83,7 @@ export default defineEndpoint(
           used: 0,
         });
 
-        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+        const frontendUrl = env.FRONTEND_URL || "http://localhost:5173";
         const resetLink = `${frontendUrl}/#/pin-reset?token=${resetToken}&email=${encodeURIComponent(
           email
         )}`;
@@ -91,9 +91,9 @@ export default defineEndpoint(
         // 异步发送邮件，不阻塞主请求
         (async () => {
           try {
-            await Promise.race([
+            const result = await Promise.race([
               resend.emails.send({
-                from: process.env.EMAIL_FROM,
+                from: env.EMAIL_FROM || "onboarding@resend.dev",
                 to: email,
                 subject: "What if---PIN Reset Request",
                 html: `
@@ -109,10 +109,21 @@ export default defineEndpoint(
                 setTimeout(() => reject(new Error("Email send timeout")), 10000)
               ),
             ]);
-            console.log(`[PIN Reset] Email sent to ${email}`);
+
+            // 检查Resend返回的错误
+            if (result.error) {
+              console.warn(
+                `[PIN Reset] Resend error: ${JSON.stringify(result.error)}`
+              );
+            } else {
+              console.log(
+                `[PIN Reset] Email sent successfully to ${email}, ID: ${result.data?.id}`
+              );
+            }
           } catch (emailError) {
-            console.warn(
-              `[PIN Reset] Email send failed: ${emailError.message}`
+            console.error(
+              `[PIN Reset] Email send failed: ${emailError.message}`,
+              emailError
             );
             console.log(`[PIN Reset] Reset link: ${resetLink}`);
           }
