@@ -105,9 +105,9 @@ export default defineEndpoint(
 					<p>If you did not request this, please ignore this email.</p>
 				`,
               }),
-              // 邮件发送超时 30秒
+              // 邮件发送超时 15秒（Railway环境可能更慢）
               new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Email send timeout")), 30000)
+                setTimeout(() => reject(new Error("Email send timeout")), 15000)
               ),
             ]);
             console.log(`[PIN Reset] Email sent to ${email}`);
