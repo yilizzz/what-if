@@ -86,24 +86,38 @@ export default defineEndpoint(
           email
         )}`;
 
-        try {
-          const mailService = new MailService({ schema, accountability: null });
-          await mailService.send({
-            to: email,
-            subject: "PIN Reset Request",
-            html: `
-					<h2>PIN Reset Request</h2>
+        // 异步发送邮件，不阻塞主请求
+        (async () => {
+          try {
+            const mailService = new MailService({
+              schema,
+              accountability: null,
+            });
+            await Promise.race([
+              mailService.send({
+                to: email,
+                subject: "What if---PIN Reset Request",
+                html: `
+					<h2>What if---PIN Reset Request</h2>
 					<p>You requested to reset your PIN code. Click the link below to proceed:</p>
 					<p><a href="${resetLink}">Reset PIN</a></p>
 					<p>This link will expire in 10 minutes.</p>
 					<p>If you did not request this, please ignore this email.</p>
 				`,
-          });
-          console.log(`[PIN Reset] Email sent to ${email}`);
-        } catch (emailError) {
-          console.warn(`[PIN Reset] Email send failed: ${emailError.message}`);
-          console.log(`[PIN Reset] Reset link: ${resetLink}`);
-        }
+              }),
+              // 邮件发送超时 30秒
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Email send timeout")), 30000)
+              ),
+            ]);
+            console.log(`[PIN Reset] Email sent to ${email}`);
+          } catch (emailError) {
+            console.warn(
+              `[PIN Reset] Email send failed: ${emailError.message}`
+            );
+            console.log(`[PIN Reset] Reset link: ${resetLink}`);
+          }
+        })();
 
         res.json({
           message: "If the email exists, a reset link has been sent",
