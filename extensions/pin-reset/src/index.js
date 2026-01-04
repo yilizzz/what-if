@@ -263,20 +263,44 @@ export default defineEndpoint(
 
         const tokenRecord = tokens[0];
 
-        // Generate new password
+        // // Generate new password
+        // const newPassword = generatePassword();
+
+        // // Update user password
+        // await usersService.updateOne(user.id, {
+        //   password: newPassword,
+        // });
+
+        // // Mark token as used
+        // await tokensService.updateOne(tokenRecord.id, {
+        //   used: 1,
+        // });
+
+        // // Return new password to client for re-encryption with new PIN
+        // res.json({
+        //   success: true,
+        //   message: "PIN reset successful",
+        //   email: user.email,
+        //   password: newPassword,
+        // });
+        // 生成新密码
         const newPassword = generatePassword();
+        console.log("[PIN Reset] Updating password for user:", user.id);
 
-        // Update user password
-        await usersService.updateOne(user.id, {
-          password: newPassword,
-        });
-
-        // Mark token as used
+        // 更新用户密码
+        try {
+          await usersService.updateOne(user.id, {
+            password: newPassword,
+          });
+          console.log("[PIN Reset] Password updated successfully");
+        } catch (error) {
+          console.error("[PIN Reset] Failed to update password:", error);
+          throw error;
+        }
         await tokensService.updateOne(tokenRecord.id, {
           used: 1,
         });
-
-        // Return new password to client for re-encryption with new PIN
+        // 返回新密码到客户端
         res.json({
           success: true,
           message: "PIN reset successful",
