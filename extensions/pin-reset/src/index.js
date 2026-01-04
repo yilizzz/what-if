@@ -1,5 +1,6 @@
 import { defineEndpoint } from "@directus/extensions-sdk";
 import crypto from "crypto";
+import { Resend } from "resend";
 
 /**
  * PIN Reset Endpoint
@@ -11,7 +12,8 @@ import crypto from "crypto";
  */
 export default defineEndpoint(
   (router, { services, getSchema, env, database }) => {
-    const { ItemsService, MailService, UsersService } = services;
+    const { ItemsService, UsersService } = services;
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     /**
      * Generate secure random token
@@ -89,12 +91,9 @@ export default defineEndpoint(
         // 异步发送邮件，不阻塞主请求
         (async () => {
           try {
-            const mailService = new MailService({
-              schema,
-              accountability: null,
-            });
             await Promise.race([
-              mailService.send({
+              resend.emails.send({
+                from: process.env.EMAIL_FROM,
                 to: email,
                 subject: "What if---PIN Reset Request",
                 html: `
@@ -105,9 +104,9 @@ export default defineEndpoint(
 					<p>If you did not request this, please ignore this email.</p>
 				`,
               }),
-              // 邮件发送超时 15秒（Railway环境可能更慢）
+              // 邮件发送超时 10秒
               new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Email send timeout")), 15000)
+                setTimeout(() => reject(new Error("Email send timeout")), 10000)
               ),
             ]);
             console.log(`[PIN Reset] Email sent to ${email}`);
