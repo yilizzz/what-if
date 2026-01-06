@@ -83,7 +83,7 @@ export default defineEndpoint(
           used: 0,
         });
 
-        const frontendUrl = env.FRONTEND_URL || "http://localhost:5173";
+        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
         const resetLink = `${frontendUrl}/#/pin-reset?token=${resetToken}&email=${encodeURIComponent(
           email
         )}`;
@@ -93,7 +93,7 @@ export default defineEndpoint(
           try {
             const result = await Promise.race([
               resend.emails.send({
-                from: env.EMAIL_FROM || "onboarding@resend.dev",
+                from: process.env.EMAIL_FROM || "onboarding@resend.dev",
                 to: email,
                 subject: "What if---PIN Reset Request",
                 html: `
@@ -297,14 +297,26 @@ export default defineEndpoint(
           await usersService.updateOne(user.id, {
             password: newPassword,
           });
-          console.log("[PIN Reset] Password updated successfully");
+          console.log(
+            "[PIN Reset] Password updated successfully for user:",
+            user.id
+          );
         } catch (error) {
           console.error("[PIN Reset] Failed to update password:", error);
           throw error;
         }
-        await tokensService.updateOne(tokenRecord.id, {
-          used: 1,
-        });
+
+        // 标记token为已使用
+        try {
+          await tokensService.updateOne(tokenRecord.id, {
+            used: 1,
+          });
+          console.log("[PIN Reset] Token marked as used");
+        } catch (error) {
+          console.error("[PIN Reset] Failed to mark token as used:", error);
+        }
+
+        console.log("[PIN Reset] Returning new password for email:", email);
         // 返回新密码到客户端
         res.json({
           success: true,
