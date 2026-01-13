@@ -28,7 +28,6 @@
     "@directus/extensions-sdk": "17.0.4"
   },
   "dependencies": {
-    "resend": "^6.6.0",
-    "@react-email/render": "0.0.16"
+    "@emailjs/nodejs": "^5.0.2"
   }
 }

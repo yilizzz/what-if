@@ -1,6 +1,6 @@
 import { defineEndpoint } from "@directus/extensions-sdk";
 import crypto from "crypto";
-import { Resend } from "resend";
+import { send as sendEmailJs } from "@emailjs/nodejs";
 
 /**
  * PIN Reset Endpoint
@@ -13,13 +13,51 @@ import { Resend } from "resend";
 export default defineEndpoint(
   (router, { services, getSchema, env, database }) => {
     const { ItemsService, UsersService } = services;
-    const resend = new Resend(env.RESEND_API_KEY);
 
     /**
      * Generate secure random token
      */
     function generateResetToken() {
       return crypto.randomBytes(32).toString("hex");
+    }
+
+    /**
+     * Send reset email via EmailJS
+     */
+    async function sendResetEmail({ to, resetLink }) {
+      if (
+        !process.env.EMAIL_SERVICE_ID ||
+        !process.env.EMAIL_TEMPLATE_PIN_RESET ||
+        !process.env.EMAIL_PUBLIC_KEY
+      ) {
+        throw new Error(
+          "EmailJS config missing: EMAIL_SERVICE_ID, EMAIL_TEMPLATE_PIN_RESET, EMAIL_PUBLIC_KEY required"
+        );
+      }
+
+      const templateParams = {
+        email_address: to,
+        reset_link: resetLink,
+      };
+
+      const sendOptions = process.env.EMAIL_PRIVATE_KEY
+        ? {
+            publicKey: process.env.EMAIL_PUBLIC_KEY,
+            privateKey: process.env.EMAIL_PRIVATE_KEY,
+          }
+        : { publicKey: process.env.EMAIL_PUBLIC_KEY };
+
+      return Promise.race([
+        sendEmailJs(
+          process.env.EMAIL_SERVICE_ID,
+          process.env.EMAIL_TEMPLATE_PIN_RESET,
+          templateParams,
+          sendOptions
+        ),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Email send timeout")), 10000)
+        ),
+      ]);
     }
 
     /**
@@ -91,40 +129,11 @@ export default defineEndpoint(
         // 异步发送邮件，不阻塞主请求
         (async () => {
           try {
-            const result = await Promise.race([
-              resend.emails.send({
-                from: process.env.EMAIL_FROM || "onboarding@resend.dev",
-                to: email,
-                subject: "What if---PIN Reset Request",
-                html: `
-					<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-						<h2 style="color: #2c3e50;">What if---PIN Reset Request</h2>
-						<p style="color: #34495e; line-height: 1.6;">You requested to reset your PIN code. Click the link below to proceed:</p>
-						<p style="color: #e74c3c; font-weight: bold; line-height: 1.6;">⚠️ If you have already installed PWA, please open this link in your app afterwards. Do not reset it in the browser embedded in the email, otherwise the data will not be synchronized.</p>
-						<p style="margin: 30px 0;">
-							<a href="${resetLink}" style="background-color: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset PIN</a>
-						</p>
-						<p style="color: #7f8c8d; font-size: 14px;">This link will expire in 10 minutes.</p>
-						<p style="color: #95a5a6; font-size: 12px;">If you did not request this, please ignore this email.</p>
-					</div>
-				`,
-              }),
-              // 邮件发送超时 10秒
-              new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Email send timeout")), 10000)
-              ),
-            ]);
-
-            // 检查Resend返回的错误
-            if (result.error) {
-              console.warn(
-                `[PIN Reset] Resend error: ${JSON.stringify(result.error)}`
-              );
-            } else {
-              console.log(
-                `[PIN Reset] Email sent successfully to ${email}, ID: ${result.data?.id}`
-              );
-            }
+            const result = await sendResetEmail({
+              to: email,
+              resetLink,
+            });
+            console.log(`[PIN Reset] Email sent to ${email}`, result);
           } catch (emailError) {
             console.error(
               `[PIN Reset] Email send failed: ${emailError.message}`,
