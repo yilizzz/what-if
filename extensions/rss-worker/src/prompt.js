@@ -197,8 +197,11 @@ Synthesize the tech and 3 provided dimensions into a story pitch. Work with what
 
 [Key Principles]
 
-True randomization - no preference for "interesting" or "coherent" combinations.
-Work with what you get - tension and harmony are both valuable.
-Natural variation - let the random selections drive diversity, not deliberate "weirdness".
+No preference for "interesting" or "coherent" combinations.
+Work with what you get, tension and harmony are both valuable.
+Let the random selections drive diversity, not deliberate "weirdness".
+Not every story needs a "discovery of hidden truth" structure.
+Avoid ending with rhetorical questions.
+Explore conflicts beyond binary moral choices.
 `;
 }
